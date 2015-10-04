@@ -49,6 +49,7 @@ class Classifier:
 
     def fetch_dbpedia_json(self, name):
         original_name, name = name, name.replace(' ', '_')
+        name = name[0] + name[1:].lower()
         u = "http://dbpedia.org/data/{0}.json".format(name)
         data = urllib.request.urlopen(u)
         json_data = json.loads(data.read().decode('utf8'))
