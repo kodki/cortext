@@ -28,6 +28,8 @@ class WordWithImage:
         return self
 
     def extract_data(self, api_config):
+        if self.image_url: return self
+        
         credential_bing = (b'Basic ' + \
             base64.b64encode(api_config['BING_KEY'] + b':' + api_config['BING_KEY'])).decode('latin1')
         search = '%27{0}%27'.format(urllib.parse.quote(self.word))

@@ -3,12 +3,13 @@ import cortext.classifier
 
 class Visualizer:
 
-    def __init__(self, text, api_config):
+    def __init__(self, text, api_config, cache=None):
         self.text = text
         self._classifier = cortext.classifier.Classifier()
         self._api_config = api_config
         self._visualized_dict = {}
         self._visualized_words = {}
+        self._cache = cache
 
     def classify_words(self):
         classified_words = {}
@@ -17,9 +18,14 @@ class Visualizer:
         for sentence in self.text.tagged_sentences:
             classified.append([])
             for tagged_word in sentence:
-                if tagged_word[0] not in classified_words:
+                if self._cache and self._cache.has(tagged_word[0]):
+                    classified_words[tagged_word[0]] = self._cache.get(tagged_word[0])
+                elif tagged_word[0] not in classified_words:
                     classified_words[
                         tagged_word[0]] = self._classifier.classify_word(tagged_word)
+                    if self._cache:
+                        self._cache.set(tagged_word[0], classified_words[
+                        tagged_word[0]])
                 classified[-1].append(classified_words[tagged_word[0]])
 
         return classified
