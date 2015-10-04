@@ -1,17 +1,61 @@
+import cortext.classifier
+
 class Visualizer:
 
     def __init__(self, text):
         self.text = text
-        self._classifier = classifier.Classifier()
+        self._classifier = cortext.classifier.Classifier()
+        self._visualized_dict = {}
+        self._visualized_words = {}
 
-    def visualize_words(self):
-        '''classify words for visualization
-           download info from apis based on classes
-           return a dict {word_id: word_info}
-        '''
-        classified = [self._classifier.classify_word(tagged_word)
-                      for tagged_word in sentence
-                      for sentence
-                      in text.tagged_sentences]
+    def classify_words(self):
+        classified_words = {}
+        classified = []
+
+        
+        for sentence in self.text.tagged_sentences:
+            classified.append([])
+            for tagged_word in sentence:
+                if tagged_word[0] not in classified_words:
+                    classified_words[
+                        tagged_word[0]] = self._classifier.classify_word(tagged_word)
+                classified[-1].append(classified_words[tagged_word[0]])
+
+        
 
         return classified
+
+    def visualize_words(self):
+        # classify words for visualization
+        # download info from apis based on classes
+        # return a dict {word_id: word_info}
+
+        classified = self.classify_words()
+        visualized = []
+
+        for sentence in classified:
+            visualized.append([])
+            for classified in sentence:
+                if classified.word not in self._visualized_words:
+                    self._visualized_dict[
+                        tagged_word[0]] = classified.extract_data()
+                visualized[-1].append(self._visualized_dict[classified.word])
+
+        self._visualized_words = visualized
+        return visualized
+
+    def visualize_sentences(self):
+        # just go nuts on this one
+        # check if one of 10-15 builtin strategies
+        # if yes: apply strategy
+        # else, just apply some random general logic
+        # or do nothing
+        # return a list with image objects corresponding to
+        # each sentence
+        if self._visualized_words is None:
+            self.visualize_words()
+
+        return [self._sentence_classifier.classify(sentence, visualized_words).
+                generate(sentence, visualized_words)
+                for sentence, visualized_words
+                in zip(self.text.tagged_sentences, self._visualized_words)]

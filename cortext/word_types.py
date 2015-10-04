@@ -2,7 +2,7 @@ class WordType:
     pass
 
 class Noun(WordType):
-    def __init__(self, image_url):
+    def __init__(self, image_url=None):
         self.image_url = image_url
 
 class Organization(WordType):
