@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'cortext',
   packages = ['cortext'], 
-  version = '0.4',
+  version = '0.5',
   description = 'A text visualization library',
   author = 'Alexander Ivanov, Sophia Petrova',
   author_email = 'alehander42@gmail.com',
