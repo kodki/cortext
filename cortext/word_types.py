@@ -1,4 +1,9 @@
 import flickrapi
+import urllib
+import urllib.request
+import urllib.parse
+import base64
+import json
 
 
 class WordType:
@@ -20,6 +25,23 @@ class WordWithImage:
         # print(photos['photos']['photo'][0])
         self.image_url = f.photos.getSizes(
             photo_id=photos['photos']['photo'][0]['id'])['sizes']['size'][4]['source']
+        return self
+
+    def extract_data(self, api_config):
+        credential_bing = (b'Basic ' + \
+            base64.b64encode(api_config['BING_KEY'] + b':' + api_config['BING_KEY'])).decode('latin1')
+        search = '%27{0}%27'.format(urllib.parse.quote(self.word))
+        top = 2
+        offset = 0
+        url = 'https://api.datamarket.azure.com/Bing/Search/v1/Image?Query={0}&$format=json'.format(
+            search)
+        request = urllib.request.Request(url)
+        request.add_header('Authorization', credential_bing)
+        response = urllib.request.urlopen(request)
+        response_data = response.read().decode('utf8')
+        json_result = json.loads(response_data)
+        result_list = json_result['d']['results']
+        self.image_url = result_list[0]['MediaUrl']
         return self
 
 
@@ -79,7 +101,7 @@ class Location(WordType):
 
 class Verb(WordWithImage):
     pass
-    
+
     # def __init__(self, word, image_url=None):
     #     self.word = word
     #     self.image_url = image_url
@@ -87,15 +109,6 @@ class Verb(WordWithImage):
 
 class Adjective(WordWithImage):
     pass
-
-
-
-
-
-
-
-
-
 
 
 class Color(WordType):
