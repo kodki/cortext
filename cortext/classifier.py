@@ -50,15 +50,18 @@ class Classifier:
     def fetch_dbpedia_json(self, name):
         original_name, name = name, name.replace(' ', '_')
         name = name[0] + name[1:].lower()
-        u = "http://dbpedia.org/data/{0}.json".format(name)
-        data = urllib.request.urlopen(u)
-        json_data = json.loads(data.read().decode('utf8'))
-        thumbnail_url = json_data[
-            "http://dbpedia.org/resource/{0}".format(name)]['http://dbpedia.org/ontology/thumbnail'][0]['value']
-        abstracts = [abstract['value'] for abstract in json_data[
-            "http://dbpedia.org/resource/{0}".format(name)]["http://dbpedia.org/ontology/abstract"] if abstract['lang'] == 'en']
-        if abstracts:
-            return word_types.Celebrity(original_name, abstracts[0], thumbnail_url)
-        else:
+        try:
+            u = "http://dbpedia.org/data/{0}.json".format(name)
+            data = urllib.request.urlopen(u)
+            json_data = json.loads(data.read().decode('utf8'))
+            thumbnail_url = json_data[
+                "http://dbpedia.org/resource/{0}".format(name)]['http://dbpedia.org/ontology/thumbnail'][0]['value']
+            abstracts = [abstract['value'] for abstract in json_data[
+                "http://dbpedia.org/resource/{0}".format(name)]["http://dbpedia.org/ontology/abstract"] if abstract['lang'] == 'en']
+            if abstracts:
+                return word_types.Celebrity(original_name, abstracts[0], thumbnail_url)
+            else:
+                return word_types.Unknown(original_name)
+        except Exception:
             return word_types.Unknown(original_name)
 
