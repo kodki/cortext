@@ -23,32 +23,32 @@ class Classifier:
         elif tag.startswith('N'):
             return self.classify_noun(word)
         else:
-            return word_types.Unknown()
+            return word_types.Unknown(word)
 
     def classify_adjective(self, word):
         # COLOR / ADJECTIVE
         for synset in wn.synsets(word):
             if synset.lexname() == 'noun.attribute' and 'color' in synset.definition():
-                return word_types.Color()
-        return word_types.Adjective()
+                return word_types.Color(word)
+        return word_types.Adjective(word)
 
     def classify_verb(self, word):
         # MOTION_VERB / COGNITION_VERB / UNKNOWN
         for synset in wn.synsets(word):
             if synset.lexname() in ['verb.motion', 'verb.cognition']:
-                return word_types.Verb()
-        return word_types.Unknown()
+                return word_types.Verb(word)
+        return word_types.Unknown(word)
 
     def classify_noun(self, word):
         # NOUN
-        return word_types.Noun()
+        return word_types.Noun(word)
 
     def classify_name(self, word):
         # ORGANIZATION / EVENT / LOCATION / <human>
         return self.fetch_dbpedia_json(word)
 
     def fetch_dbpedia_json(self, name):
-        name = name.replace(' ', '_')
+        original_name, name = name, name.replace(' ', '_')
         u = "http://dbpedia.org/data/{0}.json".format(name)
         data = urllib.request.urlopen(u)
         json_data = json.loads(data.read().decode('utf8'))
@@ -57,7 +57,7 @@ class Classifier:
         abstracts = [abstract['value'] for abstract in json_data[
             "http://dbpedia.org/resource/{0}".format(name)]["http://dbpedia.org/ontology/abstract"] if abstract['lang'] == 'en']
         if abstracts:
-            return word_types.Celebrity(abstracts[0], thumbnail_url)
+            return word_types.Celebrity(original_name, abstracts[0], thumbnail_url)
         else:
-            return word_types.Unknown()
+            return word_types.Unknown(original_name)
 
