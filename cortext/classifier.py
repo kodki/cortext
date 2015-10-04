@@ -13,10 +13,10 @@ class Classifier:
         # (FIFA, 'NNP')     -> ORGANIZATION
         # (Placebo, 'NNP')  -> MUSICIAN
         word, tag = tagged_word
+        print('classifying {0}'.format(word))
         if tag == 'JJ':
             return self.classify_adjective(word)
         elif tag.startswith('VB'):
-            print(dir(self))
             return self.classify_verb(word)
         elif tag.startswith('NNP'):
             return self.classify_name(word)
